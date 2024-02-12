@@ -8,8 +8,7 @@ from itertools import combinations
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 import networkx as nx
-import matplotlib.cm as cm
-import matplotlib.colors as colors
+from matplotlib import colormaps as cm
 #### ---------------- ####
 
 # load retrieved abstracts and brain region seed list
@@ -23,10 +22,11 @@ df = pd.DataFrame(data=np.zeros((len(abstracts), len(brain_regions))), columns=b
 for region in df.columns:
     df[region] = abstracts.str.contains(region, regex=False, case=False)
 print('Searching abstracts completed:')
-print('Brain regions were detected in', np.sum(df.sum(axis=1) > 0), 'abstracts.')
+abstracts_with_found_regions = np.sum(df.sum(axis=1) > 0)
+print('Brain regions were detected in', abstracts_with_found_regions, 'abstracts.')
 
 # calculate number of times each brain region is involved
-trim_threshold = 20
+trim_threshold = int(abstracts_with_found_regions*1/100)
 cols = df.columns[df.sum(axis=0) > trim_threshold]
 filtered = df[cols].copy()
 brain_region_counts = filtered.sum(axis=0)
@@ -39,8 +39,8 @@ for region1, region2 in combinations(filtered.columns, 2):
 print('Number of mentions and co-mentions was calculated.')
 
 # display wordcloud
-wordcloud = WordCloud(width=1200, height=800, background_color='white').generate_from_frequencies(brain_region_counts)
-plt.figure(figsize=(20, 10))
+wordcloud = WordCloud(width=800, height=1200, background_color='white').generate_from_frequencies(brain_region_counts)
+plt.figure(figsize=(10, 20))
 plt.imshow(wordcloud, interpolation='bilinear')
 plt.axis('off')
 
@@ -57,50 +57,24 @@ for region1, region2 in combinations(brain_region_counts.index, 2):
     if weight > 0:
         G.add_edge(region1, region2, weight=weight)
 
-# identify the n most connected regions
-n_select = 10
-degrees = dict(G.degree())
-sorted_edges = sorted(G.edges(data=True), key=lambda x: x[2]['weight'], reverse=True)[:n_select]
-nodes_in_strongest_connections = set()
-for u, v, data in sorted_edges:
-    nodes_in_strongest_connections.add(u)
-    nodes_in_strongest_connections.add(v)
-node_colors = ['green' if node in nodes_in_strongest_connections else '#89849c' for node in G.nodes()]
-edge_colors = ['green' if ((u, v) in [(e[0], e[1]) for e in sorted_edges] or (v, u) in [(e[0], e[1]) for e in sorted_edges]) else 'gray' for u, v in G.edges()]
-
-
 # Calculate the percentiles of edge weights
-weight_modifier = 1/50
-node_modifier = 5
-weights = nx.get_edge_attributes(G, 'weight').values()*weight_modifier
-percentiles = np.percentile(list(weights), [33, 66])
-node_categories = {node: 'weak' for node in G.nodes()}
-def categorize_weight(weight):
-    if weight <= percentiles[0]:
-        return 'weak'
-    elif weight <= percentiles[1]:
-        return 'medium'
-    else:
-        return 'strong'
-for u, v, data in G.edges(data=True):
-    category = categorize_weight(data['weight'])
-    if category == 'strong':
-        node_categories[u] = node_categories[v] = 'strong'
-    elif category == 'medium' and node_categories[u] != 'strong' and node_categories[v] != 'strong':
-        node_categories[u] = node_categories[v] = 'medium'
-        
-# Use RdPu colormap for both nodes and edges
-cmap = cm.get_cmap('RdPu', 3)  # Get RdPu colormap
-color_map = {'weak': colors.to_hex(cmap(0.2)), 'medium': colors.to_hex(cmap(0.5)), 'strong': colors.to_hex(cmap(0.8))}
+node_sizes = [G.nodes[node]['size'] for node in G.nodes()]
+percentiles = np.percentile(node_sizes, [90, 100])
+cmap = cm.get_cmap('tab10')
 
-# Assign colors to nodes and edges based on categories
-node_colors = [color_map[node_categories[node]] for node in G.nodes()]
-edge_colors = [color_map[categorize_weight(G[u][v]['weight'])] for u, v in G.edges()]
-        
-        
+def get_node_color(size, percentiles, cmap):
+    percentile_index = np.digitize(size, percentiles, right=True)
+    color = cmap(percentile_index / len(percentiles))
+    return color
+
+node_colors = [get_node_color(G.nodes[node]['size'], percentiles, cmap) for node in G.nodes()]
+edge_colors = [node_colors[list(G.nodes()).index(u)] for u, v in G.edges()]
+
 # plot
 plt.figure(figsize=(24, 16))
-pos = nx.spring_layout(G, k=10, iterations=50)
+pos = nx.spring_layout(G, k=8, iterations=50)
+weight_modifier = 1/25
+node_modifier = 5
 sizes = [G.nodes[node]['size'] * node_modifier for node in G]
 weights = [G[u][v]['weight'] * weight_modifier for u, v in G.edges()]
 nx.draw_networkx_nodes(G, pos, node_size=sizes, node_color=node_colors, alpha=0.7)
