@@ -160,3 +160,4 @@ cython_debug/
 #.idea/
 settings.json
 compiled_articles.csv
+brain_regions.csv
