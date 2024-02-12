@@ -13,7 +13,13 @@ def xml_to_df(article_details):
     for article in article_details['PubmedArticle']:
         pmid = article['MedlineCitation']['PMID']
         title = article['MedlineCitation']['Article']['ArticleTitle']
-        abstract = article['MedlineCitation']['Article'].get('Abstract', {}).get('AbstractText', ['No Abstract'])[0]
+        # Adjusted part for abstract extraction
+        abstract_parts = article['MedlineCitation']['Article'].get('Abstract', {}).get('AbstractText', [])
+        if abstract_parts:  # Check if there are any parts to the abstract
+            # Concatenate all parts of the abstract, handling both string and dictionary types
+            abstract = ' '.join([part if isinstance(part, str) else part.get('#text', '') for part in abstract_parts])
+        else:
+            abstract = 'No Abstract'
         authors_list = article['MedlineCitation']['Article'].get('AuthorList', [])
         authors = "; ".join([f"{author.get('LastName', '')}, {author.get('ForeName', '')}" for author in authors_list])
         publication_date_info = article['MedlineCitation']['Article'].get('ArticleDate', [])
