@@ -42,5 +42,8 @@ brain_regions = brain_regions.str.strip()
 brain_regions = pd.Series(list(brain_regions.unique()) +\
                           ['striatal', 'basal_ganglia', 'prefrontal',
                            'posterior cingulate cortex', 'limbic'])
-brain_regions.to_csv('brain_regions.csv', index=False)    
+brain_regions = brain_regions[~brain_regions.str.contains('root|supp')]
+brain_regions = ' ' + brain_regions
+brain_regions.to_csv('brain_regions.csv', index=False)
+print('--> brain regions csv created and saved as brain_regions.csv')
 ### ----------------------------------------------------------------------- ###
