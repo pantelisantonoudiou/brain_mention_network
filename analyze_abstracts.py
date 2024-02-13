@@ -38,11 +38,11 @@ for region1, region2 in combinations(filtered.columns, 2):
     co_mentions.loc[region2, region1] = co_mentions.loc[region1, region2]
 print('Number of mentions and co-mentions was calculated.')
 
-# display wordcloud
-wordcloud = WordCloud(width=800, height=1200, background_color='white').generate_from_frequencies(brain_region_counts)
-plt.figure(figsize=(10, 20))
-plt.imshow(wordcloud, interpolation='bilinear')
-plt.axis('off')
+# # display wordcloud
+# wordcloud = WordCloud(width=800, height=1200, background_color='white').generate_from_frequencies(brain_region_counts)
+# plt.figure(figsize=(10, 20))
+# plt.imshow(wordcloud, interpolation='bilinear')
+# plt.axis('off')
 
 # =============================================================================
 # Display Network
