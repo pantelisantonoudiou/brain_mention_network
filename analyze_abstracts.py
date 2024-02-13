@@ -73,7 +73,7 @@ edge_colors = [node_colors[list(G.nodes()).index(u)] for u, v in G.edges()]
 # plot
 plt.figure(figsize=(24, 16))
 pos = nx.spring_layout(G, k=8, iterations=50)
-weight_modifier = 1/25
+weight_modifier = 1/50
 node_modifier = 5
 sizes = [G.nodes[node]['size'] * node_modifier for node in G]
 weights = [G[u][v]['weight'] * weight_modifier for u, v in G.edges()]
