@@ -8,7 +8,6 @@ from itertools import combinations
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 import networkx as nx
-from matplotlib import colormaps as cm
 #### ---------------- ####
 
 # load retrieved abstracts and brain region seed list
@@ -26,7 +25,7 @@ abstracts_with_found_regions = np.sum(df.sum(axis=1) > 0)
 print('Brain regions were detected in', abstracts_with_found_regions, 'abstracts.')
 
 # calculate number of times each brain region is involved
-trim_threshold = int(abstracts_with_found_regions*1/100)
+trim_threshold = int(abstracts_with_found_regions*.5/100)
 cols = df.columns[df.sum(axis=0) > trim_threshold]
 filtered = df[cols].copy()
 brain_region_counts = filtered.sum(axis=0)
@@ -57,27 +56,27 @@ for region1, region2 in combinations(brain_region_counts.index, 2):
     if weight > 0:
         G.add_edge(region1, region2, weight=weight)
 
-# Calculate the percentiles of edge weights
+# Calculate the 90th percentile of node sizes and assign colors
 node_sizes = [G.nodes[node]['size'] for node in G.nodes()]
-percentiles = np.percentile(node_sizes, [90, 100])
-cmap = cm.get_cmap('tab10')
+threshold = np.percentile(node_sizes, 90)
+small_node_color = '#5495ba'
+large_node_color = '#ad2f3e'
 
-def get_node_color(size, percentiles, cmap):
-    percentile_index = np.digitize(size, percentiles, right=True)
-    color = cmap(percentile_index / len(percentiles))
-    return color
-
-node_colors = [get_node_color(G.nodes[node]['size'], percentiles, cmap) for node in G.nodes()]
-edge_colors = [node_colors[list(G.nodes()).index(u)] for u, v in G.edges()]
-
+node_colors = [small_node_color if size < threshold else large_node_color for size in node_sizes]
+edge_colors = []
+for u, v in G.edges():
+    if G.nodes[u]['size'] >= threshold and G.nodes[v]['size'] >= threshold:
+        edge_colors.append(large_node_color)
+    else:
+        edge_colors.append(small_node_color)
 # plot
 plt.figure(figsize=(24, 16))
 pos = nx.spring_layout(G, k=8, iterations=50)
-weight_modifier = 1/50
+weight_modifier = 1/35
 node_modifier = 5
 sizes = [G.nodes[node]['size'] * node_modifier for node in G]
 weights = [G[u][v]['weight'] * weight_modifier for u, v in G.edges()]
-nx.draw_networkx_nodes(G, pos, node_size=sizes, node_color=node_colors, alpha=0.7)
+nx.draw_networkx_nodes(G, pos, node_size=sizes, node_color=node_colors, alpha=0.8)
 nx.draw_networkx_edges(G, pos, width=weights, alpha=.5, edge_color=edge_colors)
 nx.draw_networkx_labels(G, pos, font_size=12, font_weight='bold')
 plt.axis('off')
