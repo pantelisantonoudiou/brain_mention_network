@@ -92,8 +92,8 @@ if __name__ == '__main__':
     # Construct query and search for articles
     tic = time.time() # start timer
     query_terms = ('("functional connectivity") AND ' +
-                   '("depression" OR "major depressive disorder" OR "postpartum depression" OR ' +
-                   '"suicide" OR  OR "anxiety" OR "ADHD" OR "OCD" OR "schizophrenia" '  +
+                   '("depression" OR "major depressive disorder" OR ' +
+                   '"suicide" OR "anxiety" OR "ADHD" OR "OCD" OR "schizophrenia" '  +
                    ' OR "post-traumatic stress" OR "PTSD" OR "bipolar disorder")')
     
     # Find number of records
