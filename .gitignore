@@ -161,3 +161,4 @@ cython_debug/
 settings.json
 compiled_articles.csv
 brain_regions.csv
+compiled_articles_v1.csv
