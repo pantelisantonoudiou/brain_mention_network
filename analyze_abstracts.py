@@ -37,11 +37,11 @@ for region1, region2 in combinations(filtered.columns, 2):
     co_mentions.loc[region2, region1] = co_mentions.loc[region1, region2]
 print('Number of mentions and co-mentions was calculated.')
 
-# display wordcloud
-wordcloud = WordCloud(width=800, height=1200, background_color='white').generate_from_frequencies(brain_region_counts)
-plt.figure(figsize=(10, 20))
-plt.imshow(wordcloud, interpolation='bilinear')
-plt.axis('off')
+# # display wordcloud
+# wordcloud = WordCloud(width=800, height=1200, background_color='white').generate_from_frequencies(brain_region_counts)
+# plt.figure(figsize=(10, 20))
+# plt.imshow(wordcloud, interpolation='bilinear')
+# plt.axis('off')
 
 # =============================================================================
 # Display Network
@@ -71,9 +71,9 @@ for u, v in G.edges():
         edge_colors.append(small_node_color)
 # plot
 plt.figure(figsize=(24, 16))
-pos = nx.spring_layout(G, k=8, iterations=50)
-weight_modifier = 1/35
-node_modifier = 5
+pos = nx.spring_layout(G, k=4, iterations=50)
+weight_modifier = .2
+node_modifier = 100
 sizes = [G.nodes[node]['size'] * node_modifier for node in G]
 weights = [G[u][v]['weight'] * weight_modifier for u, v in G.edges()]
 nx.draw_networkx_nodes(G, pos, node_size=sizes, node_color=node_colors, alpha=0.8)
