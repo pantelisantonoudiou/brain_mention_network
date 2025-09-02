@@ -92,9 +92,7 @@ if __name__ == '__main__':
     # Construct query and search for articles
     tic = time.time() # start timer
     query_terms = ('("functional connectivity") AND ' +
-                   '("depression" OR "major depressive disorder" OR ' +
-                   '"suicide" OR "anxiety" OR "ADHD" OR "OCD" OR "schizophrenia" '  +
-                   ' OR "post-traumatic stress" OR "PTSD" OR "bipolar disorder")')
+                   '("postpartum" OR "PPD" or "Postnatal depression" or "Maternal depression")')
     
     # Find number of records
     search_handle = Entrez.esearch(db="pubmed", term=query_terms, retmax=0)
