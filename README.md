@@ -27,13 +27,12 @@ The workflow is divided into three main scripts:
 
 ## Installation
 
-Clone the repository and create the conda environment from the provided `environment.yml` file:
+Download/Clone the repository and create the conda environment from the provided `environment.yml` file:
 
 ```bash
-git clone <your-repo-url>
 cd <your-repo>
 conda env create -f environment.yml
-conda activate brain-network-env
+conda activate mention_network
 ```
 
 ---
