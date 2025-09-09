@@ -159,7 +159,5 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 settings.json
-compiled_articles.csv
-brain_regions.csv
 compiled_articles_v1.csv
 /compiled_articles
