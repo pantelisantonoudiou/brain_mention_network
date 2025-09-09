@@ -37,6 +37,20 @@ conda activate mention_network
 
 ---
 
+## Getting a PubMed Account and API Key
+
+To use the PubMed fetcher, you must have an **NCBI account** and an **API key**:
+
+1. Go to the [NCBI account page](https://www.ncbi.nlm.nih.gov/account/).
+2. Create a free account or sign in with an existing account.
+3. Once logged in, navigate to **Account Settings → API Key Management**.
+4. Generate a new API key. Copy this key.
+5. When using `01_collect_abstracts.py`, enter your **NCBI email** (the one used for the account) and the generated **API key**.
+
+This ensures compliance with NCBI requirements and increases the request rate limit for fetching abstracts.
+
+---
+
 ## Usage
 
 ### 1. Create brain region list
